@@ -13,6 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/orders/', function () {
+Route::get('/', function () {
     return view('welcome');
 });
