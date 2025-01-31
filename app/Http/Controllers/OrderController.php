@@ -39,6 +39,7 @@ class OrderController extends Controller
             'status' => 201,
             'data' => [
                 ...$created->getAttributes(),
+               'status' => $created->status,
                'items' => $created->items
             ]
         ],201);

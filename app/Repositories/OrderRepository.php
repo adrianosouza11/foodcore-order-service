@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrderRepository
 {
@@ -24,5 +25,10 @@ class OrderRepository
         DB::commit();
 
         return $order;
+    }
+
+    public function getAll(): Collection
+    {
+        return Order::all();
     }
 }

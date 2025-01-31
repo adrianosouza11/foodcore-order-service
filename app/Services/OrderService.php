@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Repositories\OrderRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrderService
 {
@@ -22,5 +23,13 @@ class OrderService
     public function createOrderWithItems(array $data, array $items) : Order
     {
         return $this->orderRepository->createWithItems($data, $items);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function listOrders() : Collection
+    {
+        return $this->orderRepository->getAll();
     }
 }
