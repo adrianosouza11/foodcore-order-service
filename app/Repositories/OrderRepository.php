@@ -29,6 +29,6 @@ class OrderRepository
 
     public function getAll(): Collection
     {
-        return Order::all();
+        return Order::with('items')->get();
     }
 }

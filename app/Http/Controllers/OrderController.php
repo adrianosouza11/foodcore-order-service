@@ -22,7 +22,13 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $list = $this->orderService->listOrders();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'List orders',
+            'data' => $list
+        ]);
     }
 
     /**
