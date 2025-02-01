@@ -31,4 +31,14 @@ class OrderRepository
     {
         return Order::with('items')->get();
     }
+
+    /**
+     * @param string $orderNumber
+     * @param array $params
+     * @return Order
+     */
+    public function updateByOrderNumber(string $orderNumber, array $params) : Order
+    {
+        return Order::where('order_number', $orderNumber)->update($params);
+    }
 }

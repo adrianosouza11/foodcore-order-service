@@ -15,14 +15,21 @@ class OrderServiceTest extends TestCase
 {
     use RefreshDatabase;
 
+    private $orderRepositoryMock;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->orderRepositoryMock = Mockery::mock(OrderRepository::class);
+    }
+
     /**
      * A basic feature test example.
      */
     public function test_can_create_order(): void
     {
         //Arrange
-        $orderRepositoryMock = Mockery::mock(OrderRepository::class);
-
         $data = [
             'order_number' => '123456',
             'items' => [
@@ -33,7 +40,7 @@ class OrderServiceTest extends TestCase
             'total_amount' => 77.90
         ];
 
-        $orderRepositoryMock
+        $this->orderRepositoryMock
             ->shouldReceive('create')
             ->once()
             ->with($data)
@@ -45,7 +52,7 @@ class OrderServiceTest extends TestCase
             ]));
 
         //Act
-        $orderService = new OrderService($orderRepositoryMock);
+        $orderService = new OrderService($this->orderRepositoryMock);
         $order = $orderService->createOrder($data);
 
         //Assert
@@ -58,8 +65,6 @@ class OrderServiceTest extends TestCase
     public function test_can_create_order_with_items() : void
     {
         //Arrange
-        $orderRepositoryMock = $this->createMock(OrderRepository::class);
-
         $data = [
             'order_number' => '123456',
             'items' => [
@@ -84,14 +89,14 @@ class OrderServiceTest extends TestCase
             new OrderItem([ 'order_id' => 1, 'product_name' => 'Soda', 'quantity' => 2, 'price' => 10 ])
         ]));
 
-        $orderRepositoryMock
-            ->expects($this->once())
-            ->method('createWithItems')
+        $this->orderRepositoryMock
+            ->shouldReceive('createWithItems')
+            ->once()
             ->with($data, $items)
-            ->willReturn($expectedOrder);
+            ->andReturn($expectedOrder);
 
         //Act
-        $orderService = new OrderService($orderRepositoryMock);
+        $orderService = new OrderService($this->orderRepositoryMock);
         $order = $orderService->createOrderWithItems($data, $items);
 
         //Assert
@@ -109,8 +114,6 @@ class OrderServiceTest extends TestCase
     public function test_should_return_list_orders() : void
     {
         //Arrange
-        $orderRepositoryMock = Mockery::mock(OrderRepository::class);
-
         $expectedOrderList = Collection::make([
             (new Order([ 'id' => 1,'order_number' => '123456', 'total_amount' => 77.90, 'status' => 'pending']))
                 ->setRelation('items',collect([
@@ -128,13 +131,13 @@ class OrderServiceTest extends TestCase
                 ]))
         ]);
 
-        $orderRepositoryMock
+        $this->orderRepositoryMock
             ->shouldReceive('getAll')
             ->once()
             ->andReturn($expectedOrderList);
 
         //Act
-        $orderService = new OrderService($orderRepositoryMock);
+        $orderService = new OrderService($this->orderRepositoryMock);
         $orderList = $orderService->listOrders();
 
         //Assert
@@ -149,5 +152,34 @@ class OrderServiceTest extends TestCase
         $this->assertEquals('Pizza', $orderList[0]->items[0]->product_name);
         $this->assertEquals(1, $orderList[0]->items[0]->quantity);
         $this->assertEquals(57.90, $orderList[0]->items[0]->price);
+    }
+
+    public function test_should_update_order_status_()
+    {
+        //Arrange
+        $status = 'done';
+
+        $expectedOrder = new Order([
+            'id' => 1,
+            'order_number' => '123456',
+            'total_amount' => 77.90,
+            'status' => 'done'
+        ]);
+
+       $this->orderRepositoryMock
+           ->shouldReceive('updateByOrderNumber')
+           ->once()
+           ->with('123456', [ 'status' => $status])
+           ->andReturn($expectedOrder);
+
+       //Act
+       $orderService = new OrderService($this->orderRepositoryMock);
+       $updated = $orderService->updateStatusByOrderNumber('123456', $status);
+
+       //Assert
+       $this->assertInstanceOf(Order::class, $updated);
+       $this->assertEquals('123456', $updated->order_number);
+       $this->assertEquals('done', $updated->status);
+       $this->assertEquals(77.90, $updated->total_amount);
     }
 }

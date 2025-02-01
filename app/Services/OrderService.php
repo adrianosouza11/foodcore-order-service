@@ -32,4 +32,14 @@ class OrderService
     {
         return $this->orderRepository->getAll();
     }
+
+    /**
+     * @param string $orderNumber
+     * @param string $status
+     * @return Order
+     */
+    public function updateStatusByOrderNumber(string $orderNumber, string $status) : Order
+    {
+        return $this->orderRepository->updateByOrderNumber($orderNumber, ['status' => $status]);
+    }
 }
