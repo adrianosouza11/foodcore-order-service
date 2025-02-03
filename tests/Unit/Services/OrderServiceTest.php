@@ -154,7 +154,7 @@ class OrderServiceTest extends TestCase
         $this->assertEquals(57.90, $orderList[0]->items[0]->price);
     }
 
-    public function test_should_update_order_status_()
+    public function test_should_update_order_status()
     {
         //Arrange
         $status = 'done';

@@ -33,12 +33,29 @@ class OrderRepository
     }
 
     /**
-     * @param string $orderNumber
-     * @param array $params
-     * @return Order
+     * @param string $order_number
+     * @return Order|null
      */
-    public function updateByOrderNumber(string $orderNumber, array $params) : Order
+    public function findByOrderNumber(string $order_number) : ?Order
     {
-        return Order::where('order_number', $orderNumber)->update($params);
+        return Order::where(['order_number' => $order_number])->first();
+    }
+
+    /**
+     * @param string $order_number
+     * @param array $params
+     * @return Order|null
+     */
+    public function updateByOrderNumber(string $order_number, array $params) : ?Order
+    {
+        $order = $this->findByOrderNumber($order_number);
+
+        if(!$order)
+            return null;
+
+        $order->fill($params);
+        $order->save();
+
+        return $order;
     }
 }

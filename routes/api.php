@@ -20,3 +20,4 @@ use \App\Http\Controllers\OrderController;
 //});
 
 Route::apiResource('/', OrderController::class);
+Route::put('/status/{order_number}', OrderController::class . '@updateStatus');

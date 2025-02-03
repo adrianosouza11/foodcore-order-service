@@ -94,4 +94,23 @@ class OrderApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJson($expectedOrderStructure);
     }
+
+    public function test_should_update_order_status_via_api()
+    {
+        $order = Order::factory()->create();
+
+        $response = $this->put('/api/orders/status/' . $order->order_number, ['status' => 'done']);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 200,
+                'message' => 'Updated order',
+                'data' => [
+                    'id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'status' => 'done',
+                    'total_amount' => $order->total_amount
+                ]
+            ]);
+    }
 }
